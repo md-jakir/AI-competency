@@ -1,14 +1,23 @@
-# resource "aws_comprehend_document_classifier" "cv_classifier" {
-#   document_classifier_name = var.classifier_name
-#   language_code            = "en"
+resource "aws_comprehend_document_classifier" "custom_classifier" {
+  language_code            = "en"
+  name = var.classifier_name
 
-#   input_data_config {
-#     s3_uri = "s3://${var.input_bucket_name}/training-data/"
-#   }
+  input_data_config {
+    s3_uri = "s3://${var.input_bucket_name}"
+    //s3_uri = "s3://${var.input_bucket_name}/training-data/"
+  }
 
-#   output_data_config {
-#     s3_uri = "s3://${var.output_bucket_name}/classified-output/"
-#   }
+  output_data_config {
+    s3_uri = "s3://${var.output_bucket_name}"
+    //s3_uri = "s3://${var.output_bucket_name}/output-data/"
+  }
 
-#   data_access_role_arn = aws_iam_role.comprehend_role.arn
-# }
+  data_access_role_arn = var.data_access_role_arn
+
+  depends_on = [
+    var.comprehend_iam_role_name,
+    var.iam_role_policy_name,
+    var.input_bucket_name,
+    var.output_bucket_name
+  ]
+}
